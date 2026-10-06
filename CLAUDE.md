@@ -29,6 +29,8 @@ Líneas base registradas antes de refactorizar: `docs/linea_base_tests.txt` (20 
 - `agregarProducto` y `buscarProducto` **conservan su nombre** (los usan los tests; están en `ignore-names` de ruff). Cualquier otro nombre camelCase sí debe pasar a snake_case.
 - Una refactorización por commit (commits atómicos). Entrega vía PR de la rama `refactorizacion` → `main`.
 - Cada refactorización se documenta en la bitácora (`BITACORA.md` en la raíz, basada en `docs/BITACORA_TEMPLATE.md`): prompt usado, cambio, justificación y resultado de tests.
+- NO escribir en `BITACORA.md` ni en `PLAN.md` sin que yo lo pida explícitamente.
+  La bitácora la redacto yo.
 
 ## Arquitectura
 
