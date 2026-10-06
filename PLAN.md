@@ -76,7 +76,7 @@ eliminación pura).
 - **Por qué mejora:** el archivo siempre se cierra, aun con excepción; nombres PEP 8.
 - **Criterio de aceptación:** ruff 11 → 7 (SIM115 ×2, N802, SIM103). Caracterización:
   archivo corrupto y binario → `False` + `"archivo corrupto"`; JSON sin
-  `"ventas"` sigue lanzando `KeyError` con el inventario vaciado; JSON
+  `"ventas"` sigue lanzando `KeyError` con el inventario ya reemplazado y las ventas vaciadas; JSON
   guardado idéntico byte a byte.
 - **Zonas de riesgo:** **sí** — mutación in situ de `cargar_datos` y alcance del `except`.
 
@@ -188,7 +188,7 @@ eliminación pura).
   - **N6:** con un `datos_ejemplo.json` corrupto en el cwd, `menu()` imprime
     "Datos cargados de datos_ejemplo.json".
   - **N15:** archivo binario/UTF-8 inválido → `False` + `"archivo corrupto"`;
-    JSON válido sin `"ventas"` → `KeyError` e `INVENTARIO` queda vacío; sin
+    JSON válido sin `"ventas"` → `KeyError` con `INVENTARIO` ya reemplazado y `VENTAS` vaciada; sin
     `"contador"` → el siguiente folio es 1.
   - **N19:** `pedir_numero` reintenta ante `"abc"` y acepta `"nan"`; cantidad
     `2.7` se trunca a 2; precio `nan` se acepta; `inf` en cantidad lanza `OverflowError`.
