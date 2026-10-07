@@ -23,21 +23,24 @@ TASA_IVA = 0.16
 # ---------------------------------------------------------------
 INVENTARIO = {}
 VENTAS = []
-contadorVentas = 0
+contador_ventas = 0
 ultimo_error = ""
 
 
-def reiniciar_sistema():
-    """Borra todo el estado del sistema (inventario, ventas y folios)."""
-    global contadorVentas, ultimo_error
+def reiniciar_sistema() -> None:
+    """Borra todo el estado del sistema (inventario, ventas y folios).
+
+    Vacia INVENTARIO y VENTAS sin reemplazarlos por objetos nuevos.
+    """
+    global contador_ventas, ultimo_error
     INVENTARIO.clear()
     VENTAS.clear()
-    contadorVentas = 0
+    contador_ventas = 0
     ultimo_error = ""
 
 
-def agregarProducto(codigo, nombre, precio, stock):
-    # valida los datos y da de alta un producto en el inventario
+def agregarProducto(codigo: str | None, nombre: str, precio: float, stock: int) -> bool:
+    """Valida los datos y da de alta un producto en el inventario."""
     global ultimo_error
     if codigo is None or codigo == "":
         ultimo_error = "codigo vacio"
@@ -51,12 +54,12 @@ def agregarProducto(codigo, nombre, precio, stock):
     if stock < 0:
         ultimo_error = "stock invalido"
         return False
-    x = {}
-    x["codigo"] = codigo
-    x["nombre"] = nombre
-    x["precio"] = precio
-    x["stock"] = stock
-    INVENTARIO[codigo] = x
+    INVENTARIO[codigo] = {
+        "codigo": codigo,
+        "nombre": nombre,
+        "precio": precio,
+        "stock": stock,
+    }
     return True
 
 
@@ -70,27 +73,30 @@ def eliminar_producto(codigo):
     return False
 
 
-def actualizar_stock(codigo, cantidad):
+def actualizar_stock(codigo: str, cantidad: int) -> bool:
     """Suma unidades al stock (o resta si la cantidad es negativa)."""
     global ultimo_error
     if codigo not in INVENTARIO:
         ultimo_error = "producto no existe"
         return False
-    aux = INVENTARIO[codigo]["stock"] + cantidad
-    if aux < 0:
+    nuevo_stock = INVENTARIO[codigo]["stock"] + cantidad
+    if nuevo_stock < 0:
         ultimo_error = "el stock no puede quedar negativo"
         return False
-    INVENTARIO[codigo]["stock"] = aux
+    INVENTARIO[codigo]["stock"] = nuevo_stock
     return True
 
 
-def buscarProducto(texto):
-    # busca productos cuyo nombre contenga el texto (sin importar mayusculas)
-    temp2 = []
-    for k in INVENTARIO:
-        if texto.lower() in INVENTARIO[k]["nombre"].lower():
-            temp2.append(INVENTARIO[k])
-    return temp2
+def buscarProducto(texto: str) -> list[dict]:
+    """Busca productos cuyo nombre contenga el texto (sin importar mayusculas).
+
+    Regresa los mismos diccionarios del inventario, no copias.
+    """
+    return [
+        producto
+        for producto in INVENTARIO.values()
+        if texto.lower() in producto["nombre"].lower()
+    ]
 
 
 def descuento_por_volumen(subtotal: float) -> float:
@@ -164,7 +170,7 @@ def registrar_venta(
 
     Si la venta no procede regresa None y deja el motivo en ultimo_error.
     """
-    global contadorVentas, ultimo_error
+    global contador_ventas, ultimo_error
     error = validar_venta(codigo, cantidad)
     if error is not None:
         ultimo_error = error
@@ -177,9 +183,9 @@ def registrar_venta(
     impuesto = base * TASA_IVA
     total = round(base + impuesto, 2)
     producto["stock"] = producto["stock"] - cantidad
-    contadorVentas = contadorVentas + 1
+    contador_ventas = contador_ventas + 1
     venta = {
-        "folio": contadorVentas,
+        "folio": contador_ventas,
         "codigo": codigo,
         "nombre": producto["nombre"],
         "cantidad": cantidad,
