@@ -3,76 +3,73 @@
 
 import gestor
 
-
-def hacer_cosa(v):
-    # le da formato de dinero al numero
-    return "$" + str(round(v, 2))
+STOCK_MINIMO = 5
 
 
-def productos_stock_bajo():
+def formatear_dinero(valor: float) -> str:
+    """Le da formato de dinero al numero (ej. 20 -> "$20", 20.0 -> "$20.0")."""
+    return "$" + str(round(valor, 2))
+
+
+def productos_stock_bajo() -> list[dict]:
     """Regresa la lista de productos con stock por debajo del minimo."""
-    temp2 = []
-    for k in gestor.INVENTARIO:
-        if gestor.INVENTARIO[k]["stock"] < 5:
-            temp2.append(gestor.INVENTARIO[k])
-    return temp2
+    return [p for p in gestor.INVENTARIO.values() if p["stock"] < STOCK_MINIMO]
 
 
-def reporte_inventario():
+def reporte_inventario() -> str:
     """Arma el reporte del inventario, lo imprime y lo regresa como texto."""
-    s = "===== INVENTARIO =====\n"
-    aux = 0
-    for k in gestor.INVENTARIO:
-        p = gestor.INVENTARIO[k]
-        linea = p["codigo"] + " | " + p["nombre"] + " | "
-        linea = linea + hacer_cosa(p["precio"]) + " | stock: " + str(p["stock"])
-        if p["stock"] < 5:
+    reporte = "===== INVENTARIO =====\n"
+    valor_total = 0
+    for producto in gestor.INVENTARIO.values():
+        linea = producto["codigo"] + " | " + producto["nombre"] + " | "
+        linea = linea + formatear_dinero(producto["precio"])
+        linea = linea + " | stock: " + str(producto["stock"])
+        if producto["stock"] < STOCK_MINIMO:
             linea = linea + "  <-- STOCK BAJO"
-        s = s + linea + "\n"
-        aux = aux + p["precio"] * p["stock"]
-    s = s + "Valor total del inventario: " + hacer_cosa(aux) + "\n"
-    print(s)
-    return s
+        reporte = reporte + linea + "\n"
+        valor_total = valor_total + producto["precio"] * producto["stock"]
+    reporte = reporte + "Valor total del inventario: "
+    reporte = reporte + formatear_dinero(valor_total) + "\n"
+    print(reporte)
+    return reporte
 
 
-def total_vendido():
+def total_vendido() -> float:
     """Suma el total (con IVA) de todas las ventas registradas."""
-    t = 0
-    for v in gestor.VENTAS:
-        t = t + v["total"]
-    return round(t, 2)
+    # suma en un ciclo a proposito: desde Python 3.12, sum() usa suma
+    # compensada para floats y podria cambiar el resultado
+    total = 0
+    for venta in gestor.VENTAS:
+        total = total + venta["total"]
+    return round(total, 2)
 
 
-def mas_vendidos(n=3):
-    """Regresa los n productos mas vendidos como lista de (codigo, unidades)."""
-    aux = {}
-    for v in gestor.VENTAS:
-        if v["codigo"] in aux:
-            aux[v["codigo"]] = aux[v["codigo"]] + v["cantidad"]
-        else:
-            aux[v["codigo"]] = v["cantidad"]
-    temp = []
-    for k in aux:
-        temp.append((k, aux[k]))
-    # ordenamiento de burbuja (TODO: algun dia usar sorted)
-    for i in range(len(temp)):
-        for j in range(0, len(temp) - i - 1):
-            if temp[j][1] < temp[j + 1][1]:
-                t = temp[j]
-                temp[j] = temp[j + 1]
-                temp[j + 1] = t
-    return temp[0:n]
+def mas_vendidos(n: int = 3) -> list[tuple[str, int]]:
+    """Regresa los n productos mas vendidos como lista de (codigo, unidades).
+
+    En caso de empate conserva el orden de la primera venta de cada producto.
+    """
+    unidades_por_codigo = {}
+    for venta in gestor.VENTAS:
+        codigo = venta["codigo"]
+        unidades_por_codigo[codigo] = (
+            unidades_por_codigo.get(codigo, 0) + venta["cantidad"]
+        )
+    # sorted es estable tambien con reverse=True (no usar sorted(...)[::-1])
+    ranking = sorted(
+        unidades_por_codigo.items(), key=lambda par: par[1], reverse=True
+    )
+    return ranking[0:n]
 
 
-def resumen_ventas():
+def resumen_ventas() -> str:
     """Arma el resumen de ventas del dia, lo imprime y lo regresa."""
-    s = "===== RESUMEN DE VENTAS =====\n"
-    t = 0
-    for v in gestor.VENTAS:
-        s = s + "Folio " + str(v["folio"]) + ": " + v["nombre"]
-        s = s + " x" + str(v["cantidad"]) + " = " + hacer_cosa(v["total"]) + "\n"
-        t = t + v["total"]
-    s = s + "Numero de ventas: " + str(len(gestor.VENTAS)) + "\n"
-    s = s + "Total del dia: " + hacer_cosa(t) + "\n"
-    print(s)
-    return s
+    resumen = "===== RESUMEN DE VENTAS =====\n"
+    for venta in gestor.VENTAS:
+        resumen = resumen + "Folio " + str(venta["folio"]) + ": " + venta["nombre"]
+        resumen = resumen + " x" + str(venta["cantidad"]) + " = "
+        resumen = resumen + formatear_dinero(venta["total"]) + "\n"
+    resumen = resumen + "Numero de ventas: " + str(len(gestor.VENTAS)) + "\n"
+    resumen = resumen + "Total del dia: " + formatear_dinero(total_vendido()) + "\n"
+    print(resumen)
+    return resumen
