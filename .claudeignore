@@ -1,0 +1,14 @@
+# Entorno virtual
+.venv/
+
+# Cachés de Python y herramientas
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# Archivos del sistema
+.DS_Store
+
+# Datos generados por la app al guardar desde el menú
+src/datos_ejemplo.json
