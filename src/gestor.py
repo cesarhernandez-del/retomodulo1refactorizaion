@@ -13,7 +13,6 @@ INVENTARIO = {}
 VENTAS = []
 contadorVentas = 0
 ultimo_error = ""
-MODO_DEBUG = False
 
 
 def reiniciar_sistema():
@@ -179,19 +178,3 @@ def cotizar(codigo, cantidad):
     base = aux - desc
     total = base + base * 0.16
     return round(total, 2)
-
-
-def calcular_descuento_viejo(monto):
-    # NOTA: esta era la formula de descuentos que se uso hasta 2023,
-    # ya nadie la llama pero la dejamos por si acaso
-    if monto > 800:
-        return monto * 0.08
-    return 0
-
-
-# def exportar_txt(ruta):
-#     f = open(ruta, "w")
-#     for k in INVENTARIO:
-#         f.write(k + " - " + str(INVENTARIO[k]["stock"]) + "\n")
-#     f.close()
-#     return True
