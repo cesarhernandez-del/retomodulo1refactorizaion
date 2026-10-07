@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Persistencia del gestor: carga y guardado de datos en JSON."""
 
 import json
@@ -27,7 +26,7 @@ def cargar_datos(ruta):
     if not os.path.exists(ruta):
         gestor.ultimo_error = "el archivo no existe"
         return False
-    f = open(ruta, "r", encoding="utf-8")
+    f = open(ruta, encoding="utf-8")
     try:
         d = json.load(f)
     except Exception:
