@@ -1,0 +1,15 @@
+warning: No `requires-python` value found in the workspace. Defaulting to `>=3.12`.
+============================= test session starts ==============================
+platform darwin -- Python 3.12.14, pytest-9.1.1, pluggy-1.6.0
+rootdir: /Users/cesarhdz/Documents/Curso IA TEC/Modulo 1/reto-refactorizacion
+configfile: pyproject.toml
+testpaths: tests
+collected 111 items
+
+tests/test_almacen.py ...                                                [  2%]
+tests/test_caracterizacion.py .......................................... [ 40%]
+.................................................                        [ 84%]
+tests/test_gestor.py .............                                       [ 96%]
+tests/test_reportes.py ....                                              [100%]
+
+============================= 111 passed in 0.05s ==============================
